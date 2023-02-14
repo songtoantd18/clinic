@@ -5,15 +5,15 @@ const ErrorPages = () => {
   return (
     <div>
       <h1>404 Error Page </h1>
-      <p class="zoom-area"></p>
-      <section class="error-container">
+      <p className="zoom-area"></p>
+      <section className="error-container">
         <span>4</span>
         <span>
-          <span class="screen-reader-text">0</span>
+          <span className="screen-reader-text">0</span>
         </span>
         <span>4</span>
       </section>
-      <div class="link-container"></div>
+      <div className="link-container"></div>
     </div>
   );
 };
