@@ -7,6 +7,9 @@ import * as Yup from "yup";
 import { auth, google, facebook, twitter, github } from "./Firebase";
 import { signInWithPopup, signOut } from "@firebase/auth";
 import { ROUTE } from "constants/constantsGlobal";
+import FormDemo from "./FormDemo";
+import Profile from "./Profile";
+
 const Login = () => {
   const [emailLogin, setEmailLogin] = useState("");
   const [passwordLogin, setPasswordLogin] = useState("");
@@ -19,16 +22,20 @@ const Login = () => {
 
   const loginSocial = async (provider) => {
     const result = await signInWithPopup(auth, provider);
+    console.log("result:", result);
     setUser(result.user);
+    console.log("user:", user);
+    console.log("1:", 1);
     setIsLogin(true);
-    console.log(result);
+    setIsSubmitted(true);
   };
 
   const logout = async () => {
     const result = await signOut(auth);
     setUser(null);
     setIsLogin(false);
-    console.log(result);
+    console.log("1:", 1);
+    setIsSubmitted(false);
   };
 
   ///////////////////////////////////////////// register
@@ -69,6 +76,7 @@ const Login = () => {
           /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/,
           "please enter a validation"
         ),
+
       password: Yup.string()
         .required("Required")
         .matches(
@@ -92,7 +100,7 @@ const Login = () => {
       } catch (error) {}
     };
     getTodos();
-  }, [database]);
+  }, [user]);
   ///////////////////////////////////logic login
   const handleLogin = (e) => {
     e.preventDefault();
@@ -128,7 +136,26 @@ const Login = () => {
   return (
     <div>
       {isSubmitted ? (
-        <div>User is successfully logged in</div>
+        <div>
+          <Profile
+            email={user.email}
+            fullName={user.displayName}
+            role="user"
+            password=""
+            age="20"
+            address="da nang"
+            booked="true"
+            examinationHistory="da dat lich"
+          />
+          User is successfully logged in
+          <h1>Welcome!</h1>
+          <img src={user.photoURL} style={{ width: 120 }} />
+          <p>
+            Welcome {user.displayName}! Your account {user.email} has been
+            successfully logged in at {user.metadata.lastSignInTime}
+          </p>
+          <button onClick={logout}>out</button>
+        </div>
       ) : (
         <section className="login">
           <div
@@ -136,51 +163,60 @@ const Login = () => {
           >
             <div className="form-container register-item">
               <form onSubmit={formik.handleSubmit}>
-                <input
+                <FormDemo
                   type="text"
                   id="name"
                   name="name"
                   placeholder="Enter your name"
                   value={formik.values.name}
                   onChange={formik.handleChange}
+                  error={
+                    formik.errors.name && (
+                      <p className="error"> {formik.errors.name}</p>
+                    )
+                  }
                 />
-                {formik.errors.name && (
-                  <p className="error"> {formik.errors.name}</p>
-                )}
 
-                <input
+                <FormDemo
                   type="text"
                   id="email"
                   name="email"
                   placeholder="Enter your email"
                   value={formik.values.email}
                   onChange={formik.handleChange}
+                  error={
+                    formik.errors.email && (
+                      <p className="error"> {formik.errors.email}</p>
+                    )
+                  }
                 />
-                {formik.errors.email && (
-                  <p className="error"> {formik.errors.email}</p>
-                )}
-                <input
+                <FormDemo
                   type="password"
                   id="password"
                   name="password"
                   placeholder="Enter your password"
                   value={formik.values.password}
                   onChange={formik.handleChange}
+                  error={
+                    formik.errors.password && (
+                      <p className="error"> {formik.errors.password}</p>
+                    )
+                  }
                 />
-                {formik.errors.password && (
-                  <p className="error"> {formik.errors.password}</p>
-                )}
-                <input
+                <FormDemo
                   type="password"
                   id="confirmPassword"
                   name="confirmPassword"
                   placeholder="Confirm password"
                   value={formik.values.confirmPassword}
                   onChange={formik.handleChange}
+                  error={
+                    formik.errors.confirmPassword && (
+                      <p className="error"> {formik.errors.confirmPassword}</p>
+                    )
+                  }
                 />
-                {formik.errors.confirmPassword && (
-                  <p className="error"> {formik.errors.confirmPassword}</p>
-                )}
+
                 <button>register</button>
 
                 <span>or use your account</span>
@@ -189,7 +225,9 @@ const Login = () => {
                     <i
                       onClick={() => loginSocial(facebook)}
                       className="fa-brands fa-square-facebook"
-                    ></i>
+                    >
+                      12
+                    </i>
                   </Link>
                   <Link to="#" className="social">
                     <i
@@ -201,7 +239,7 @@ const Login = () => {
                   <Link to="#" className="social">
                     <i
                       onClick={() => loginSocial(github)}
-                      class="fa-brands fa-github"
+                      className="fa-brands fa-github"
                     ></i>
                   </Link>
                 </div>
@@ -210,21 +248,31 @@ const Login = () => {
             <div className="form-container login-item">
               <form action="#">
                 <h1>Login hire.</h1>
-                <input
+                <FormDemo
                   type="text"
                   name="uname"
                   placeholder="Email"
                   required
                   onChange={(e) => setEmailLogin(e.target.value)}
+                  error={
+                    formik.errors.email && (
+                      <p className="error"> {formik.errors.email}</p>
+                    )
+                  }
                 />
                 {renderErrorMessage("uname")}
 
-                <input
+                <FormDemo
                   name="pass"
                   type="text"
                   placeholder="Password"
                   required
                   onChange={(e) => setPasswordLogin(e.target.value)}
+                  error={
+                    formik.errors.email && (
+                      <p className="error"> {formik.errors.email}</p>
+                    )
+                  }
                 />
                 {renderErrorMessage("pass")}
                 <div className="content">
@@ -246,11 +294,14 @@ const Login = () => {
                       <i className="fa-brands fa-square-facebook"></i>
                     </Link>
                     <Link to="#" className="social">
-                      <i className="fa-brands fa-google"></i>
+                      <i
+                        onClick={() => loginSocial(google)}
+                        className="fa-brands fa-google"
+                      ></i>
                     </Link>
 
                     <Link to="#" className="social">
-                      <i class="fa-brands fa-github"></i>
+                      <i className="fa-brands fa-github"></i>
                     </Link>
                   </div>
                 </div>
